@@ -34,12 +34,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
 
-
-            <!-- Point to additional information for this dream (optional) -->
-            <!--<meta-data
-                android:name="android.service.dream"
-                android:resource="@xml/photodaydream_settings" />
-               -->
         </service>
     </application>
 
