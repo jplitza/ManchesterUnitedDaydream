@@ -1,13 +1,17 @@
 package de.jplitza.slideshowdaydream;
 
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.service.dreams.DreamService;
 import android.util.Log;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.ImageView;
+import android.widget.ViewAnimator;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
@@ -21,7 +25,7 @@ import okhttp3.ResponseBody;
 
 public class PhotoDaydreamService extends DreamService {
 
-    ImageView iv;
+    ViewAnimator ivs;
     List<String> urls = new ArrayList<>();
     Picasso picasso;
     OkHttpClient client = new OkHttpClient();
@@ -30,13 +34,28 @@ public class PhotoDaydreamService extends DreamService {
     Runnable r = new Runnable() {
         @Override
         public void run() {
-            picasso.with(PhotoDaydreamService.this).load(urls.get(i)).into(iv);
+            ImageView iv = (ImageView) ivs.getChildAt((ivs.getDisplayedChild() + 1) % ivs.getChildCount());
+            Picasso.with(PhotoDaydreamService.this)
+                    .load(urls.get(i))
+                    .noFade()
+                    .into(iv, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            ivs.showNext();
+                        }
+
+                        @Override
+                        public void onError() {
+                            imageSwitchHandler.post(r);
+                        }
+                    });
+
             i++;
             if (i >= urls.size()) {
                 i = 0;
             }
             imageSwitchHandler.removeCallbacks(r);
-            imageSwitchHandler.postDelayed(r, 10000);
+            imageSwitchHandler.postDelayed(r, PhotoDaydreamService.this.getResources().getInteger(R.integer.displayDuration));
         }
     };
 
@@ -47,7 +66,18 @@ public class PhotoDaydreamService extends DreamService {
         setFullscreen(true);
         super.onDreamingStarted();
         setContentView(R.layout.dream_view);
-        iv = (ImageView) findViewById(R.id.ivPicture);
+        ivs = (ViewAnimator) findViewById(R.id.ivPictures);
+
+        // set animations
+        Animation fadeOut = new AlphaAnimation(1, 0);
+        fadeOut.setInterpolator(new AccelerateInterpolator());
+        fadeOut.setDuration(this.getResources().getInteger(R.integer.fadeDuration));
+        ivs.setOutAnimation(fadeOut);
+
+        Animation fadeIn = new AlphaAnimation(0, 1);
+        fadeIn.setInterpolator(new AccelerateInterpolator());
+        fadeIn.setDuration(this.getResources().getInteger(R.integer.fadeDuration));
+        ivs.setInAnimation(fadeIn);
 
         new Thread(getData).start();
     }
@@ -76,13 +106,6 @@ public class PhotoDaydreamService extends DreamService {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            picasso = new Picasso.Builder(PhotoDaydreamService.this).listener(new Picasso.Listener() {
-                @Override
-                public void onImageLoadFailed(Picasso picasso, Uri uri, Exception exception) {
-                    exception.printStackTrace();
-                }
-            }).build();
 
             imageSwitchHandler = new android.os.Handler(Looper.getMainLooper());
             imageSwitchHandler.postDelayed(r, 0);

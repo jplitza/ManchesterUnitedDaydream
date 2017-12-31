@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="displayDuration">15000</integer>
+    <integer name="fadeDuration">2000</integer>
+</resources>
