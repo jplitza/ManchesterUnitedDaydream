@@ -1,7 +1,8 @@
 <resources>
-    <string name="app_name">ManUtd Daydream</string>
+    <string name="app_name">Slideshow Daydream</string>
 
-    <string name="daydream_name">Manchester United Photo Show</string>
-    <string name="settings_name">ManUtd Daydream</string>
+    <string name="daydream_name">Slideshow</string>
+    <string name="settings_name">Slideshow Daydream</string>
+    <string name="settings_intro">This app can be used to show your own images as a slideshow when your device is in Daydream mode. Enter the URL of a plaintext file that in turn contains a list of URLs of images to display (can be file://):</string>
 
 </resources>
