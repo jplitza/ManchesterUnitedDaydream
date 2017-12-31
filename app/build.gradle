@@ -1,8 +1,17 @@
+buildscript {
+    repositories {
+        google()
+    }
+
+    dependencies {
+        classpath "com.android.tools.build:gradle:3.0.1"
+    }
+}
+
 apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.rdevs.manchesteruniteddaydream"
@@ -17,6 +26,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+}
+
+repositories {
+    google()
+    mavenCentral()
 }
 
 dependencies {
